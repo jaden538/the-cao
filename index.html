@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Web Tạo Mã Thẻ Cào</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: linear-gradient(to right, #83a4d4, #b6fbff);
+      padding: 20px;
+    }
+    h2 {
+      color: #333;
+    }
+    button {
+      margin: 5px;
+      padding: 10px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    select, input {
+      padding: 5px;
+      margin: 5px;
+    }
+    ul {
+      background: white;
+      padding: 10px;
+      border-radius: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>🔐 TẠO MÃ THẺ CÀO GIẢ LẬP</h2>
+
+  <label>Chọn nhà mạng:</label>
+  <select id="nhaMang">
+    <option>Viettel</option>
+    <option>Vinaphone</option>
+    <option>Mobifone</option>
+  </select>
+
+  <label>Chọn mệnh giá:</label>
+  <select id="menhGia">
+    <option value="10000">10.000đ</option>
+    <option value="20000">20.000đ</option>
+    <option value="50000">50.000đ</option>
+    <option value="100000">100.000đ</option>
+  </select>
+
+  <br>
+  <button onclick="taoThongTinThe()">🎯 Tạo thẻ</button>
+  <button onclick="saoChepMa()">📋 Sao chép mã</button>
+  <button onclick="xoaThe()">🗑 Xóa danh sách</button>
+  <button onclick="xuatThe()">💾 Xuất file TXT</button>
+
+  <p id="thongTinThe"></p>
+
+  <h3>📂 Danh sách thẻ đã tạo:</h3>
+  <ul id="danhSachThe"></ul>
+
+  <h3>🔍 Tìm kiếm thẻ theo mệnh giá:</h3>
+  <input id="timGia" placeholder="Nhập mệnh giá (VD: 100000)">
+  <button onclick="timKiemGia()">🔎 Tìm</button>
+  <ul id="ketQuaTim"></ul>
+
+  <script>
+    function taoThongTinThe() {
+      const mang = document.getElementById("nhaMang").value;
+      const gia = document.getElementById("menhGia").value;
+      const ma = Math.floor(Math.random() * 1e15).toString().padStart(15, '0');
+      const serial = Math.floor(Math.random() * 1e11).toString().padStart(11, '0');
+      document.getElementById("thongTinThe").innerHTML = `
+        <b>Nhà mạng:</b> ${mang} <br>
+        <b>Mệnh giá:</b> ${gia}đ <br>
+        <b>Serial:</b> ${serial} <br>
+        <b id="maThe">Mã thẻ: ${ma}</b>
+      `;
+      luuThe(serial, ma, gia, mang);
+    }
+
+    function luuThe(serial, ma, gia, mang) {
+      const ul = document.getElementById("danhSachThe");
+      const li = document.createElement("li");
+      li.innerText = `Mạng: ${mang} | Seri: ${serial} | Mã: ${ma} | Giá: ${gia}đ`;
+      ul.appendChild(li);
+    }
+
+    function xoaThe() {
+      document.getElementById("danhSachThe").innerHTML = "";
+    }
+
+    function saoChepMa() {
+      const text = document.getElementById("maThe");
+      if (!text) return alert("Chưa có mã để sao chép!");
+      navigator.clipboard.writeText(text.innerText).then(() => {
+        alert("Đã sao chép mã thẻ!");
+      });
+    }
+
+    function timKiemGia() {
+      const gia = document.getElementById("timGia").value;
+      const lis = document.querySelectorAll("#danhSachThe li");
+      const ketQua = document.getElementById("ketQuaTim");
+      ketQua.innerHTML = "";
+      lis.forEach(li => {
+        if (li.innerText.includes(gia + "đ")) {
+          ketQua.appendChild(li.cloneNode(true));
+        }
+      });
+    }
+
+    function xuatThe() {
+      const lis = document.querySelectorAll("#danhSachThe li");
+      let content = "";
+      lis.forEach(li => content += li.innerText + "\n");
+      const blob = new Blob([content], { type: "text/plain" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "the_cao.txt";
+      a.click();
+    }
+  </script>
+
+</body>
+</html>
